@@ -4,11 +4,7 @@ const app = require("./controllers/properties");
 const cors = require("cors");
 app.use(
   cors({
-    origin: [
-      "http://localhost:4200",
-      "https://record-notes.netlify.app",
-      "https://notes-taker-theta.vercel.app",
-    ],
+    origin: ["http://localhost:4200", "https://acreage-properties.netlify.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
