@@ -19,5 +19,6 @@ client.connect();
 const acreageDB = client.db("Acreage");
 module.exports.userCollection = acreageDB.collection("users");
 module.exports.trackCollection = acreageDB.collection("trackdata");
+module.exports.propertyCollection = acreageDB.collection("properties");
 
 app.listen(process.env.PORT || 9999);

@@ -29,7 +29,7 @@ const trackSchema = new mongoose.Schema({
   parkingType: String,
   furnishingType: String,
   ageOfProperty: String,
-  //   images: mongoose.Types,
+  images: mongoose.Schema.Types.Array,
   expectedPrice: Number,
   registrationCharges: Number,
   bookingAmount: Number,
