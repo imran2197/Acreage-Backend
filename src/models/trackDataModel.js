@@ -1,6 +1,15 @@
 const { default: mongoose } = require("mongoose");
 
 const trackSchema = new mongoose.Schema({
+  stepperData: [
+    {
+      label: String,
+      active: Boolean,
+      completed: Boolean,
+      disabled: Boolean,
+    },
+  ],
+  activeStepper: String,
   phoneNumber: Number,
   type: String,
   propertyType: String,
@@ -25,6 +34,7 @@ const trackSchema = new mongoose.Schema({
   registrationCharges: Number,
   bookingAmount: Number,
   description: String,
+  isSubmitted: Boolean,
 });
 
 module.exports.trackModel = mongoose.model("trackData", trackSchema);
