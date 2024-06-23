@@ -1,26 +1,18 @@
 const { MongoClient } = require("mongodb");
 const app = require("./controllers/properties");
 
-// const cors = require("cors");
-// app.use(
-//   cors({
-//     origin: [
-//       "http://localhost:4200",
-//       "https://acreage-properties.netlify.app",
-//       "https://acreage.vercel.app/",
-//     ],
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true,
-//   })
-// );
-
-app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  next();
-});
+const cors = require("cors");
+app.use(
+  cors({
+    origin: [
+      "http://localhost:4200",
+      "https://acreage-properties.netlify.app",
+      "https://acreage.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 const conn_str =
   "mongodb+srv://imran251099:imran251099@notescluster.luj719m.mongodb.net/Acreage?retryWrites=true&w=majority&appName=NotesCluster";
