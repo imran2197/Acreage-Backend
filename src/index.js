@@ -1,19 +1,6 @@
 const { MongoClient } = require("mongodb");
 const app = require("./controllers/properties");
 
-const cors = require("cors");
-app.use(
-  cors({
-    origin: [
-      "http://localhost:4200",
-      "https://acreage-properties.netlify.app",
-      "https://acreage.vercel.app",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
-
 const conn_str =
   "mongodb+srv://imran251099:imran251099@notescluster.luj719m.mongodb.net/Acreage?retryWrites=true&w=majority&appName=NotesCluster";
 
