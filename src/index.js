@@ -7,7 +7,7 @@ app.use(
     origin: [
       "http://localhost:4200",
       "https://acreage-properties.netlify.app",
-      "https://acreage.vercel.app",
+      "https://acreage.vercel.app/",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
