@@ -19,7 +19,7 @@ const trackSchema = new mongoose.Schema({
   locality: String,
   state: String,
   lattitude: Number,
-  Longitude: Number,
+  longitude: Number,
   bedrooms: Number,
   bathRooms: Number,
   balconies: Number,
@@ -35,6 +35,8 @@ const trackSchema = new mongoose.Schema({
   bookingAmount: Number,
   description: String,
   isSubmitted: Boolean,
+  createdAt: Date,
+  active: Boolean,
 });
 
 module.exports.trackModel = mongoose.model("trackData", trackSchema);

@@ -47,7 +47,7 @@ app.use(
 //       cb(null, `${file.originalname}-${Date.now()}`);
 //     },
 //   }),
-// }).array("image", 3);
+// }).array("image", 10);
 
 const userModel = users.userModel;
 const trackModel = trackData.trackModel;
@@ -58,24 +58,75 @@ app.get("/", (req, res) => {
   res.send("Server is working fine!!");
 });
 
-app.get("/users", async (req, res) => {
-  const users = await collections.userCollection.find().toArray();
-  res.send(users);
-});
-
 app.post("/acreage/login", async (req, res) => {
-  const { phoneNumber } = req.body;
+  const { name, email, phoneNumber, registeredAs } = req.body;
   const existingUser = await collections.userCollection.findOne({
     phoneNumber,
   });
   if (isNullOrUndefined(existingUser)) {
     const newUser = new userModel({
-      phoneNumber,
+      name: "",
+      email: "",
+      phoneNumber: phoneNumber,
+      registeredAs: registeredAs,
     });
     await collections.userCollection.insertOne(newUser);
     res.send({ statusCode: 201, message: "User added successfully." });
   } else {
-    res.send({ statusCode: 200, message: "User already exists." });
+    await collections.userCollection.updateOne(
+      { phoneNumber },
+      {
+        $set: {
+          registeredAs: registeredAs,
+          name: name ? name : existingUser.name,
+          email: email ? email : existingUser.email,
+        },
+      }
+    );
+    res.send({
+      statusCode: 200,
+      response: existingUser,
+    });
+  }
+});
+
+app.post("/acreage/userData", async (req, res) => {
+  const { phoneNumber } = req.body;
+  if (!isNullOrUndefined(phoneNumber)) {
+    const existingUser = await collections.userCollection.findOne({
+      phoneNumber: phoneNumber,
+    });
+    if (!isNullOrUndefined(existingUser)) {
+      res.send({ statusCode: 200, response: existingUser });
+    } else {
+      res.send({
+        statusCode: 404,
+        message: "No user availabel with this number.",
+      });
+    }
+  } else {
+    res.send({ statusCode: 401, message: "Please login and try again." });
+  }
+});
+
+app.post("/acreage/getUserProperties", async (req, res) => {
+  const phoneNumber = req.body.phoneNumber;
+  if (!isNullOrUndefined(phoneNumber)) {
+    const existingUserProperties = await collections.propertyCollection
+      .find({
+        phoneNumber,
+      })
+      .toArray();
+    if (!isNullOrUndefined(existingUserProperties)) {
+      res.send({ statusCode: 200, response: existingUserProperties });
+    } else {
+      res.send({
+        statusCode: 404,
+        message: "No properties found.",
+      });
+    }
+  } else {
+    res.send({ statusCode: 401, message: "Please login and try again." });
   }
 });
 
@@ -109,6 +160,8 @@ app.post("/acreage/createTrackData", async (req, res) => {
         phoneNumber,
       });
       if (isNullOrUndefined(existingTrackData)) {
+        req.body.createdAt = new Date();
+        req.body.active = false;
         const newTrackData = new trackModel(req.body);
         await collections.trackCollection.insertOne(newTrackData);
         res.send({
@@ -176,6 +229,8 @@ app.post("/acreage/postProperty", async (req, res) => {
         phoneNumber,
       });
       if (!isNullOrUndefined(existingTrackData)) {
+        req.body.createdAt = new Date();
+        req.body.active = true;
         const newPropertyData = new trackModel(req.body);
         await collections.propertyCollection.insertOne(newPropertyData);
         await collections.trackCollection.deleteOne({
@@ -213,16 +268,18 @@ app.post("/acreage/postProperty", async (req, res) => {
 //         phoneNumber,
 //       });
 //       if (!isNullOrUndefined(existingTrackData)) {
-//         req.files.map(async (file) => {
-//           await collections.trackCollection.updateOne(
-//             { phoneNumber },
-//             { $push: { images: file.location } }
-//           );
-//         });
-//         res.send({
-//           statusCode: 200,
-//           message: "Trackdata updated successfully.",
-//         });
+//         if (req.files.length > 0) {
+//           req.files.map(async (file) => {
+//             await collections.trackCollection.updateOne(
+//               { phoneNumber },
+//               { $push: { images: file.location } }
+//             );
+//           });
+//           res.send({
+//             statusCode: 200,
+//             message: "Trackdata updated successfully.",
+//           });
+//         }
 //       } else {
 //         res.send({
 //           statusCode: 404,
@@ -241,13 +298,13 @@ app.post("/acreage/postProperty", async (req, res) => {
 // });
 
 // app.post("/acreage/deleteImage", async (req, res) => {
-//   const { phoneNumber, filename } = req.body;
+//   const { phoneNumber, filename, imageName } = req.body;
 //   try {
 //     if (!isNullOrUndefined(phoneNumber)) {
-//       // await s3.deleteObject({ Bucket: BUCKET_NAME, Key: filename }).promise();
 //       await s3.send(
 //         new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: filename })
 //       );
+
 //       const existingUser = await collections.userCollection.findOne({
 //         phoneNumber,
 //       });
@@ -258,7 +315,7 @@ app.post("/acreage/postProperty", async (req, res) => {
 //         if (!isNullOrUndefined(existingTrackData)) {
 //           await collections.trackCollection.updateOne(
 //             { phoneNumber },
-//             { $pull: { images: filename } }
+//             { $pull: { images: imageName } }
 //           );
 //           res.send({
 //             statusCode: 200,
