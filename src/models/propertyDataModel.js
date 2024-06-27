@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 
-const trackSchema = new mongoose.Schema({
+const propertySchema = new mongoose.Schema({
   stepperData: [
     {
       label: String,
@@ -39,4 +39,4 @@ const trackSchema = new mongoose.Schema({
   active: Boolean,
 });
 
-module.exports.trackModel = mongoose.model("trackData", trackSchema);
+module.exports.propertyModel = mongoose.model("trackData", propertySchema);
