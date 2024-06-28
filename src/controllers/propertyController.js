@@ -1,19 +1,7 @@
-// const { S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const Property = require("../models/propertyDataModel");
 const collections = require("../index");
+const { ObjectId } = require("mongodb");
 const propertyModel = Property.propertyModel;
-
-// const dotenv = require("dotenv");
-// dotenv.config();
-
-// const BUCKET_NAME = process.env.BUCKET_NAME;
-// const s3 = new S3Client({
-//   credentials: {
-//     secretAccessKey: process.env.SECRET_ACCESS_KEY,
-//     accessKeyId: process.env.ACCESS_KEY,
-//   },
-//   region: process.env.BUCKET_REGION,
-// });
 
 const isNullOrUndefined = (val) => val === null || val === undefined;
 
@@ -190,96 +178,74 @@ exports.postProperty = async (req, res) => {
   }
 };
 
-// exports.uploadImagesToS3 = async (req, res) => {
-//   try {
-//     const phoneNumber = Number(req.body.phoneNumber);
-//     if (!isNullOrUndefined(phoneNumber)) {
-//       const existingUser = await collections.userCollection.findOne({
-//         phoneNumber,
-//       });
-//       if (!isNullOrUndefined(existingUser)) {
-//         const existingTrackData = await collections.trackCollection.findOne({
-//           phoneNumber,
-//         });
-//         if (!isNullOrUndefined(existingTrackData)) {
-//           if (req.files.length > 0) {
-//             req.files.map(async (file) => {
-//               await collections.trackCollection.updateOne(
-//                 { phoneNumber },
-//                 { $push: { images: file.location } }
-//               );
-//             });
-//             res.send({
-//               statusCode: 200,
-//               message: "Trackdata updated successfully.",
-//             });
-//           }
-//         } else {
-//           res.send({
-//             statusCode: 404,
-//             message: "No trackdata found.",
-//           });
-//         }
-//       } else {
-//         res.send({
-//           statusCode: 401,
-//           message: "User does not exist. Please login and try again.",
-//         });
-//       }
-//     } else {
-//       res.send({ statusCode: 401, message: "Please login and try again." });
-//     }
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(500).send("Server Error");
-//   }
-// };
+exports.getEditPropertyData = async (req, res) => {
+  try {
+    const { phoneNumber, id } = req.body;
+    if (!isNullOrUndefined(phoneNumber)) {
+      const existingPropertyData = await collections.propertyCollection.findOne(
+        {
+          phoneNumber,
+          _id: ObjectId.createFromHexString(id),
+        }
+      );
+      if (!isNullOrUndefined(existingPropertyData)) {
+        res.send({ statusCode: 200, response: existingPropertyData });
+      } else {
+        res.send({
+          statusCode: 404,
+          message: "No property data found.",
+        });
+      }
+    } else {
+      res.send({ statusCode: 401, message: "Please login and try again." });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Server Error");
+  }
+};
 
-// exports.deleteImageFromS3 = async (req, res) => {
-//   try {
-//     const { phoneNumber, filename, imageName } = req.body;
-//     try {
-//       if (!isNullOrUndefined(phoneNumber)) {
-//         await s3.send(
-//           new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: filename })
-//         );
-//         const existingUser = await collections.userCollection.findOne({
-//           phoneNumber,
-//         });
-//         if (!isNullOrUndefined(existingUser)) {
-//           const existingTrackData = await collections.trackCollection.findOne({
-//             phoneNumber,
-//           });
-//           if (!isNullOrUndefined(existingTrackData)) {
-//             await collections.trackCollection.updateOne(
-//               { phoneNumber },
-//               { $pull: { images: imageName } }
-//             );
-//             res.send({
-//               statusCode: 200,
-//               message: "Image deleted successfully.",
-//             });
-//           } else {
-//             res.send({
-//               statusCode: 404,
-//               message: "No trackdata found.",
-//             });
-//           }
-//         } else {
-//           res.send({
-//             statusCode: 401,
-//             message: "User does not exist. Please login and try again.",
-//           });
-//         }
-//       } else {
-//         res.send({ statusCode: 401, message: "Please login and try again." });
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).send("Internal Server Error");
-//     }
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(500).send("Server Error");
-//   }
-// };
+exports.editPropertyData = async (req, res) => {
+  try {
+    const { phoneNumber, _id, ...data } = req.body;
+    if (!isNullOrUndefined(phoneNumber)) {
+      const existingUser = await collections.userCollection.findOne({
+        phoneNumber,
+      });
+      if (!isNullOrUndefined(existingUser)) {
+        const existingPropertyData =
+          await collections.propertyCollection.findOne({
+            phoneNumber,
+            _id: ObjectId.createFromHexString(_id),
+          });
+        if (!isNullOrUndefined(existingPropertyData)) {
+          await collections.propertyCollection.updateOne(
+            { phoneNumber, _id: ObjectId.createFromHexString(_id) },
+            {
+              $set: data,
+            }
+          );
+          res.send({
+            statusCode: 200,
+            message: "Property data updated successfully.",
+          });
+        } else {
+          res.send({
+            statusCode: 404,
+            message: "No property data found.",
+          });
+        }
+      } else {
+        res.send({
+          statusCode: 401,
+          message: "User does not exist. Please login and try again.",
+        });
+      }
+    } else {
+      res.send({ statusCode: 401, message: "Please login and try again." });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Server Error");
+  }
+};
