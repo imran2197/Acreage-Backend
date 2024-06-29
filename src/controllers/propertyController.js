@@ -249,3 +249,37 @@ exports.editPropertyData = async (req, res) => {
     return res.status(500).send("Server Error");
   }
 };
+
+exports.getAllActiveProperties = async (req, res) => {
+  try {
+    const allActiveProperties = await collections.propertyCollection
+      .find({
+        active: true,
+      })
+      .project({ _id: 0, phoneNumber: 0, stepperData: 0 })
+      .toArray();
+    res.send({ statusCode: 200, response: allActiveProperties });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Server Error");
+  }
+};
+
+exports.getAllCitiesNames = async (req, res) => {
+  try {
+    const allCitieNames = await collections.propertyCollection.distinct("city");
+    res.send({ statusCode: 200, response: allCitieNames });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Server Error");
+  }
+};
+
+exports.getFilteredProperty = async (req, res) => {
+  const body = req.body;
+  try {
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Server Error");
+  }
+};
