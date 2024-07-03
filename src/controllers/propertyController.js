@@ -250,21 +250,6 @@ exports.editPropertyData = async (req, res) => {
   }
 };
 
-exports.getAllActiveProperties = async (req, res) => {
-  try {
-    const allActiveProperties = await collections.propertyCollection
-      .find({
-        active: true,
-      })
-      .project({ _id: 0, phoneNumber: 0, stepperData: 0 })
-      .toArray();
-    res.send({ statusCode: 200, response: allActiveProperties });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send("Server Error");
-  }
-};
-
 exports.getAllCitiesNames = async (req, res) => {
   try {
     const allCitieNames = await collections.propertyCollection.distinct("city");
@@ -277,7 +262,45 @@ exports.getAllCitiesNames = async (req, res) => {
 
 exports.getFilteredProperty = async (req, res) => {
   const body = req.body;
+  const pageOptions = {
+    page: parseInt(req.body.page, 10) || 0,
+    limit: parseInt(req.body.limit, 10) || 9,
+  };
   try {
+    var query = {};
+    query.active = true;
+    if (body.type) query.type = body.type;
+    if (body.propertyType) query.propertyType = body.propertyType;
+    if (body.city) query.city = body.city;
+    if (Array.isArray(body.space)) {
+      query.space = { $in: body.space };
+    } else if (typeof body.space === "string") {
+      query.space = body.space;
+    }
+    if (Array.isArray(body.bedrooms)) {
+      query.bedrooms = { $in: body.bedrooms };
+    } else if (typeof body.bhk === "number") {
+      query.bedrooms = body.bedrooms;
+    }
+
+    if (body.minimumPrice && body.maximumPrice) {
+      query.expectedPrice = {
+        $gte: body.minimumPrice,
+        $lte: body.maximumPrice,
+      };
+    } else if (body.minimumPrice) {
+      query.expectedPrice = { $lte: body.minimumPrice };
+    } else if (body.maximumPrice) {
+      query.expectedPrice = { $lte: body.maximumPrice };
+    }
+    const length = await collections.propertyCollection.countDocuments(query);
+    const result = await collections.propertyCollection
+      .find(query)
+      .skip(pageOptions.page * pageOptions.limit)
+      .limit(pageOptions.limit)
+      .project({ _id: 0, phoneNumber: 0, stepperData: 0 })
+      .toArray();
+    res.send({ statusCode: 200, total: length, response: result });
   } catch (err) {
     console.log(err);
     return res.status(500).send("Server Error");

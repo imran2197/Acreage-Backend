@@ -25,4 +25,4 @@ exports.uploadToS3 = multer({
       cb(null, `${file.originalname}-${Date.now()}`);
     },
   }),
-}).array("image", 10);
+}).array("image", 15);
