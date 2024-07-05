@@ -15,6 +15,39 @@
 
 // const isNullOrUndefined = (val) => val === null || val === undefined;
 
+// exports.uploadProfileImage = async (req, res) => {
+//   try {
+//     const phoneNumber = Number(req.body.phoneNumber);
+//     if (!isNullOrUndefined(phoneNumber)) {
+//       const existingProfile = await collections.userCollection.findOne({
+//         phoneNumber,
+//       });
+//       if (!isNullOrUndefined(existingProfile)) {
+//         if (req.files.length > 0) {
+//           await collections.userCollection.updateOne(
+//             { phoneNumber },
+//             { $set: { profileImage: req.files[0].location } }
+//           );
+//           res.send({
+//             statusCode: 200,
+//             message: "Profile added successfully !!",
+//           });
+//         }
+//       } else {
+//         res.send({
+//           statusCode: 401,
+//           message: "User does not exist. Please login and try again.",
+//         });
+//       }
+//     } else {
+//       res.send({ statusCode: 401, message: "Please login and try again." });
+//     }
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).send("Server Error");
+//   }
+// };
+
 // exports.uploadImagesToTrackData = async (req, res) => {
 //   try {
 //     const phoneNumber = Number(req.body.phoneNumber);

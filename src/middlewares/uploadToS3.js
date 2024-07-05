@@ -26,3 +26,16 @@ exports.uploadToS3 = multer({
     },
   }),
 }).array("image", 15);
+
+exports.uploadProfileImageToS3 = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: BUCKET_NAME,
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      cb(null, `${file.originalname}`);
+    },
+  }),
+}).array("image", 1);
