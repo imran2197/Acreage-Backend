@@ -3,7 +3,7 @@ const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const authRoutes = require("./Routes/authRoutes");
 const propertyRoutes = require("./Routes/propertyRoutes");
-// const s3BucketRoutes = require("./Routes/s3BucketRoutes");
+const s3BucketRoutes = require("./Routes/s3BucketRoutes");
 
 const app = express();
 app.use(express.json());
@@ -34,6 +34,6 @@ module.exports.propertyCollection = acreageDB.collection("properties");
 // Routes
 app.use("/auth", authRoutes);
 app.use("/acreage", propertyRoutes);
-// app.use("/acreage", s3BucketRoutes);
+app.use("/acreage", s3BucketRoutes);
 
 app.listen(process.env.PORT || 9999);
