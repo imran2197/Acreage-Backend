@@ -10,11 +10,9 @@ const {
 const { ObjectId } = require("mongodb");
 
 const collections = require("../index");
-const dotenv = require("dotenv");
-dotenv.config();
 
-const region = process.env.AWS_REGION;
-const secretName = process.env.SECRET_NAME;
+const region = "ap-south-1";
+const secretName = "myS3Secret";
 
 const secretsManagerClient = new SecretsManagerClient({
   region,
