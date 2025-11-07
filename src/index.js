@@ -32,6 +32,10 @@ module.exports.userCollection = acreageDB.collection("users");
 module.exports.trackCollection = acreageDB.collection("trackdata");
 module.exports.propertyCollection = acreageDB.collection("properties");
 
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Server is running successfully 🚀" });
+});
+
 // Routes
 app.use("/auth", authRoutes);
 app.use("/acreage", propertyRoutes);
