@@ -38,3 +38,5 @@ app.use("/acreage", propertyRoutes);
 app.use("/acreage", s3BucketRoutes);
 
 app.listen(process.env.PORT || 9999);
+
+export default app;
